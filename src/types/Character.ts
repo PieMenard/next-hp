@@ -3,4 +3,5 @@ export type Character = {
   name: string;
   gender: string;
   wizard: boolean;
+  image: string;
 };
