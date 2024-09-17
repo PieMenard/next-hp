@@ -3,9 +3,14 @@
 import { Character } from '@/types/Character';
 import { useEffect, useState } from 'react';
 import CharList from './components/CharList';
+import SearchBox from './components/SearchBox';
 
 export default function Home() {
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [query, setQuery] = useState('');
+  const [filteredChararacters, setFilteredCharacters] = useState<Character[]>(
+    []
+  );
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -14,16 +19,29 @@ export default function Home() {
       );
       const results = await response.json();
       setCharacters(results);
+      setFilteredCharacters(results);
     };
     fetchCharacters();
   }, []);
+
+  const handleSearch = async (query: string) => {
+    const search = characters.filter((char) =>
+      char.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCharacters(search);
+  };
 
   return (
     <div>
       <h1 className="text-center text-xl my-5 font-semibold py-4">
         The Dudes and Dudettes of Harry Potter
       </h1>
-      <CharList characters={characters} />
+      <SearchBox
+        query={query}
+        setQuery={setQuery}
+        handleSearch={handleSearch}
+      />
+      <CharList characters={filteredChararacters} />
     </div>
   );
 }
