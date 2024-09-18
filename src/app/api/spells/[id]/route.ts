@@ -37,3 +37,17 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ success: false, message: error });
   }
 }
+export async function DELETE(req: NextRequest) {
+  try {
+    const id = parseInt(req.url.split('/spells/')[1]);
+    const spell = await prisma.spell.delete({
+      where: { id },
+    });
+    return NextResponse.json({
+      success: true,
+      message: `deleted ${spell.name}`,
+    });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error });
+  }
+}
