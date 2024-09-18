@@ -8,6 +8,15 @@ export async function GET(req: NextRequest) {
       where: { id },
       include: { spells: true },
     });
+    if (!character) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Character not found',
+        },
+        { status: 404 }
+      );
+    }
     return NextResponse.json({ success: true, data: character });
   } catch (error) {
     return NextResponse.json({ success: false, message: error });
@@ -67,6 +76,22 @@ export async function PUT(req: NextRequest) {
       include: { spells: true },
     });
     return NextResponse.json({ success: true, data: character });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const id = parseInt(req.url.split('/characters/')[1]);
+    const character = await prisma.character.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: `deleted ${character.name}`,
+    });
   } catch (error) {
     return NextResponse.json({ success: false, message: error });
   }
