@@ -14,7 +14,16 @@ datasource db {
 }
 
 model Spell {
-  id          Int    @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   description String
+  characters  Character[] @relation("CharacterSpells")
+}
+
+model Character {
+  id     String  @id @default(uuid())
+  name   String
+  gender String
+  wizard Boolean
+  spells Spell[] @relation("CharacterSpells")
 }
