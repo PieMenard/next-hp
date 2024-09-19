@@ -7,7 +7,38 @@ export async function GET(req: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
     const limit = parseInt(searchParams.get('limit') || '10');
 
+    const id = searchParams.get('id');
+    const name = searchParams.get('name');
+    const wizard = searchParams.get('wizard');
+    const spell = searchParams.get('spell');
+
+    const filters: any = {};
+
+    if (id) {
+      filters.id = parseInt(id);
+    }
+
+    if (name) {
+      filters.name = { contains: name, mode: 'insensitive' };
+    }
+
+    if (wizard) {
+      filters.name = { wizard: true };
+    }
+
+    if (spell) {
+      filters.spells = {
+        some: {
+          name: {
+            contains: spell,
+            mode: 'insensitive',
+          },
+        },
+      };
+    }
+
     const data = await prisma.character.findMany({
+      where: filters,
       select: { name: true, id: true },
       skip: offset,
       take: limit,
