@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
-    const id = parseInt(req.url.split('/characters/')[1]);
+    const id = req.url.split('/characters/')[1];
     const character = await prisma.character.findUnique({
       where: { id },
       include: { spells: true },
@@ -34,7 +34,7 @@ export async function PUT(req: NextRequest) {
       });
     }
 
-    const id = parseInt(req.url.split('/characters/')[1]);
+    const id = req.url.split('/characters/')[1];
 
     const existingCharacter = await prisma.character.findUnique({
       where: { id },
@@ -83,7 +83,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const id = parseInt(req.url.split('/characters/')[1]);
+    const id = req.url.split('/characters/')[1];
     const character = await prisma.character.delete({
       where: { id },
     });
