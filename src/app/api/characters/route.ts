@@ -37,9 +37,13 @@ export async function GET(req: NextRequest) {
       };
     }
 
+    const totalCount = await prisma.character.count({
+      where: filters,
+    });
+
     const data = await prisma.character.findMany({
       where: filters,
-      select: { name: true, id: true },
+      select: { name: true, id: true, wizard: true },
       skip: offset,
       take: limit,
     });
@@ -48,6 +52,7 @@ export async function GET(req: NextRequest) {
       offset: offset,
       limit: limit,
       results: data,
+      totalCount: totalCount
     };
 
     return NextResponse.json({ success: true, data: results });

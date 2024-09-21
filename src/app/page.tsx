@@ -1,54 +1,61 @@
 'use client';
 
-import { Character } from '@/types/Character';
 import { useEffect, useState } from 'react';
 import CharList from './components/CharList';
 import SearchBox from './components/SearchBox';
 import AddChar from './components/AddChar';
 
 export default function Home() {
-  const [characters, setCharacters] = useState<Character[]>([]);
+  const [characters, setCharacters] = useState([]);
   const [query, setQuery] = useState('');
-  const [filteredChararacters, setFilteredCharacters] = useState<Character[]>(
-    []
-  );
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [totalResults, setTotalResults] = useState(0);
+  const itemsPerPage = 10; // Number of items per page
 
+  // Fetch characters based on search query and pagination
+  const fetchCharacters = async () => {
+    const offset = (currentPage - 1) * itemsPerPage;
+    const limit = itemsPerPage;
+
+    const params = new URLSearchParams({
+      offset: offset.toString(),
+      limit: limit.toString(),
+      name: query, // Add search query to params
+    });
+
+    try {
+      const response = await fetch(`/api/characters?${params}`);
+      const result = await response.json();
+
+      if (result.success) {
+        setCharacters(result.data.results);
+        setTotalResults(result.data.totalCount);
+      }
+    } catch (error) {
+      console.error('Error fetching characters:', error);
+    }
+  };
+
+  // Fetch characters when the component mounts and when query or page changes
   useEffect(() => {
-    const fetchCharacters = async () => {
-      const response = await fetch(
-        'https://hp-api.herokuapp.com/api/characters'
-      );
-      const results = await response.json();
-      setCharacters(results);
-      setFilteredCharacters(results);
-    };
     fetchCharacters();
-  }, []);
+  }, [query, currentPage]);
 
-  const handleSearch = async (query: string) => {
-    const search = characters.filter((char) =>
-      char.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCharacters(search);
+  // Handle search
+  const handleSearch = (newQuery: string) => {
+    setQuery(newQuery);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredChararacters.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-
-  const totalPages = Math.ceil(filteredChararacters.length / itemsPerPage);
+  const totalPages = Math.ceil(totalResults / itemsPerPage);
 
   return (
-    <div className=" flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <h1 className="text-center text-xl my-5 font-semibold py-4">
         The Dudes and Dudettes of Harry Potter
       </h1>
@@ -60,9 +67,9 @@ export default function Home() {
         />
         <AddChar />
       </div>
-      <CharList characters={currentItems} />
+      <CharList characters={characters} />
 
-      {/* Pagination controls */}
+      {/* Pagination Controls */}
       <div className="pagination mt-4 flex gap-2">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -71,15 +78,6 @@ export default function Home() {
         >
           Previous
         </button>
-        {/* {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            className={currentPage === index + 1 ? 'font-bold' : ''}
-          >
-            {index + 1}
-          </button>
-        ))} */}
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
