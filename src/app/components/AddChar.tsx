@@ -6,12 +6,26 @@ const AddChar = () => {
   const [formData, setFormData] = useState({
     name: '',
     gender: 'male',
-    wizard: 'wizard',
+    wizard: true,
+    spells: [],
   });
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(formData);
+    try {
+      const res = await fetch('/api/characters', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -33,6 +47,8 @@ const AddChar = () => {
             id="male"
             name="gender"
             value="male"
+            checked={formData.gender === 'male'}
+            onChange={() => setFormData({ ...formData, gender: 'male' })}
             className="border-2 rounded-md mx-2"
           />
           <label htmlFor="male">Male</label>
@@ -41,6 +57,8 @@ const AddChar = () => {
             id="female"
             name="gender"
             value="female"
+            checked={formData.gender === 'female'}
+            onChange={() => setFormData({ ...formData, gender: 'female' })}
             className="border-2 rounded-md mx-2 cursor-pointer"
           />
           <label htmlFor="female">Female</label>
@@ -50,18 +68,22 @@ const AddChar = () => {
         <div>
           <input
             type="radio"
-            id="wizard"
+            id="wizard_true"
             name="wizard"
-            value="wizard"
+            value="true"
+            checked={formData.wizard === true}
+            onChange={() => setFormData({ ...formData, wizard: true })}
             className="border-2 rounded-md mx-2 cursor-pointer"
           />
-          <label htmlFor="wizard">Wizard</label>
+          <label htmlFor="wizard_true">Wizard</label>
           <input
             type="radio"
             id="muggle"
             name="wizard"
-            value="muggle"
-            className="border-2 rounded-md mx-2"
+            value="false"
+            checked={formData.wizard === false}
+            onChange={() => setFormData({ ...formData, wizard: false })}
+            className="border-2 rounded-md mx-2 cursor-pointer"
           />
           <label htmlFor="muggle">Muggle</label>
         </div>
