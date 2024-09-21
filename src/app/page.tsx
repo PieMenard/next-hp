@@ -12,6 +12,8 @@ export default function Home() {
   const [filteredChararacters, setFilteredCharacters] = useState<Character[]>(
     []
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -32,6 +34,19 @@ export default function Home() {
     setFilteredCharacters(search);
   };
 
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredChararacters.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const totalPages = Math.ceil(filteredChararacters.length / itemsPerPage);
+
   return (
     <div className=" flex flex-col items-center">
       <h1 className="text-center text-xl my-5 font-semibold py-4">
@@ -45,7 +60,34 @@ export default function Home() {
         />
         <AddChar />
       </div>
-      <CharList characters={filteredChararacters} />
+      <CharList characters={currentItems} />
+
+      {/* Pagination controls */}
+      <div className="pagination mt-4 flex gap-2">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="disabled:opacity-40"
+        >
+          Previous
+        </button>
+        {/* {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index}
+            onClick={() => handlePageChange(index + 1)}
+            className={currentPage === index + 1 ? 'font-bold' : ''}
+          >
+            {index + 1}
+          </button>
+        ))} */}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="disabled:opacity-40"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
