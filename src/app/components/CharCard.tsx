@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const CharCard = ({ character }: { character: Character }) => {
   return (
-    <div className="border-2 border-cyan-700 rounded-lg bg-slate-100 w-[250px] h-[350px] my-4 mx-auto flex flex-col items-center">
+    <div className="border-2 border-cyan-700 rounded-lg bg-slate-100 w-[250px] h-[350px] my-4 flex flex-col items-center mx-4">
       <h1 className="py-2 border-b border-cyan-700 font-semibold text-cyan-700 mb-2 w-full text-center">
         {character.name}
       </h1>
