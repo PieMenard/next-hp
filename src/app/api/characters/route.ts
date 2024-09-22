@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
     const data = await prisma.character.findMany({
       where: filters,
       select: { name: true, id: true, wizard: true },
+      orderBy: { name: 'asc' },
       skip: offset,
       take: limit,
     });
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
       offset: offset,
       limit: limit,
       results: data,
-      totalCount: totalCount
+      totalCount: totalCount,
     };
 
     return NextResponse.json({ success: true, data: results });
@@ -77,7 +78,9 @@ export async function POST(req: NextRequest) {
       },
       include: { spells: true },
     });
-    return NextResponse.json({ success: true, data: character });
+    if (character) {
+      return NextResponse.json({ success: true, data: character });
+    }
   } catch (error) {
     return NextResponse.json({ success: false, message: error });
   }

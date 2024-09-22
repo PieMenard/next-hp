@@ -10,7 +10,7 @@ export default function Home() {
   const [query, setQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 8; // Number of items per page
 
   // Fetch characters based on search query and pagination
   const fetchCharacters = async () => {
@@ -65,7 +65,7 @@ export default function Home() {
           setQuery={setQuery}
           handleSearch={handleSearch}
         />
-        <AddChar />
+        <AddChar refetchChars={fetchCharacters} />
       </div>
       <CharList characters={characters} />
 

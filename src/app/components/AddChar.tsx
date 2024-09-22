@@ -1,8 +1,9 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FormEvent, useRef, useState } from 'react';
 
-const AddChar = () => {
+const AddChar = ({ refetchChars }: { refetchChars: () => void }) => {
   const [formData, setFormData] = useState({
     name: '',
     gender: 'male',
@@ -10,19 +11,34 @@ const AddChar = () => {
     spells: [],
   });
 
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(formData);
     try {
       const res = await fetch('/api/characters', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
+
+      if (data.success) {
+        formRef.current?.reset();
+        setFormData({
+          name: '',
+          gender: 'male',
+          wizard: true,
+          spells: [],
+        });
+        router.refresh();
+        refetchChars();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -31,7 +47,11 @@ const AddChar = () => {
   return (
     <div className="w-[400px] border py-2 pb-5 rounded-lg flex flex-col justify-center">
       <h1 className="text-center font-bold">Add a New Character</h1>
-      <form className="flex flex-col text-center" onSubmit={handleSubmit}>
+      <form
+        ref={formRef}
+        className="flex flex-col text-center"
+        onSubmit={handleSubmit}
+      >
         <label htmlFor="name">Name</label>
         <input
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
