@@ -67,7 +67,7 @@ export default function Home() {
         />
         <AddChar refetchChars={fetchCharacters} />
       </div>
-      <CharList characters={characters} />
+      <CharList characters={characters} fetchCharacters={fetchCharacters} />
 
       {/* Pagination Controls */}
       <div className="pagination mt-4 flex gap-2">
