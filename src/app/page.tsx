@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import CharList from './components/CharList';
 import SearchBox from './components/SearchBox';
 import AddChar from './components/AddChar';
+import { useDebouncedCallback } from 'use-debounce';
 
 export default function Home() {
   const [characters, setCharacters] = useState([]);
@@ -42,10 +43,10 @@ export default function Home() {
   }, [query, currentPage]);
 
   // Handle search
-  const handleSearch = (newQuery: string) => {
+  const handleSearch = useDebouncedCallback((newQuery: string) => {
     setQuery(newQuery);
     setCurrentPage(1); // Reset to first page when searching
-  };
+  }, 300);
 
   // Handle page change
   const handlePageChange = (newPage: number) => {
